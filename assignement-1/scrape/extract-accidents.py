@@ -6,11 +6,13 @@ PDF_PATH = "../data/raw/Verkehrsunfälle-Graubuenden.pdf"
 with pdfplumber.open(PDF_PATH) as pdf:
     data = []
 
+    # unsere Daten sind auf den Seiten 11-13
     for i in range(11, 14):
         page = pdf.pages[i]
         tables = page.extract_tables()
         for table in tables:
             for row in table:
+                # In dem PDF werden die Kopf/Fusszeile als eigene Tabelle erkannt
                 if row and len(row) >= 8:
                     gemeinde = row[0]
                     sachschaden = row[1]
@@ -21,6 +23,7 @@ with pdfplumber.open(PDF_PATH) as pdf:
                     erheblich_verletzte = row[6]
                     leichtverletzte = row[6]
 
+                    # Datensätze der Gemeinden extrahieren
                     if gemeinde and gemeinde not in ['Total', None, '']:
                         data.append({
                             'Gemeinde': gemeinde.strip(),
@@ -48,5 +51,6 @@ with pdfplumber.open(PDF_PATH) as pdf:
         df.loc[df['Gemeinde'] == 'Chur', numeric_cols] += tschi[numeric_cols].iloc[0]
         df = df[df['Gemeinde'] != 'Tschiertschen-Praden'].reset_index(drop=True)
 
+    # Daten in einer CSV Datei speichern
     df.to_csv('../data/scraped/accidents.csv', index=False)
     print(df.head())
