@@ -2,6 +2,8 @@ import pandas as pd
 import os
 
 os.makedirs("./data", exist_ok=True)
+os.makedirs("./data/raw", exist_ok=True)
+
 input_path = "../assignment-1/data/ranking.csv"
 df_original = pd.read_csv(input_path)
 
